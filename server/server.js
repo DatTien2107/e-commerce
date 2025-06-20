@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import testRoutes from "./routes/testRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 
 import connectDB from "./config/db.js";
 import cookieParser from "cookie-parser";
@@ -38,6 +39,7 @@ app.use(cookieParser());
 app.use("/api/v1", testRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/product", productRoutes);
+app.use("/api/v1/cat", categoryRoutes);
 
 app.get("/", (req, res) => {
   return res.status(200).send("<h1> welcome node server<h1/>");

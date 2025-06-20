@@ -55,7 +55,9 @@ export const getTopProductsController = async (req, res) => {
 export const getSingleProductController = async (req, res) => {
   try {
     // get product id
-    const product = await productModel.findById(req.params.id);
+    const product = await productModel
+      .findById(req.params.id)
+      .populate("category");
     //valdiation
     if (!product) {
       return res.status(404).send({
