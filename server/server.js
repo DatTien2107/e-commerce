@@ -1,12 +1,30 @@
-import express from "express";
 import colors from "colors";
 import morgan from "morgan";
+import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+//routes import
+import testRoutes from "./routes/testRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
 
+import connectDB from "./config/db.js";
+import cookieParser from "cookie-parser";
+import claudinary from "cloudinary";
 //dot env config
 dotenv.config();
 
+//database connection
+connectDB();
+
+//cloudinary
+claudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
+});
+
+// app.use(express.json());
 //test
 const app = express();
 
@@ -14,8 +32,13 @@ const app = express();
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 
 // route
+app.use("/api/v1", testRoutes);
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/product", productRoutes);
+
 app.get("/", (req, res) => {
   return res.status(200).send("<h1> welcome node server<h1/>");
 });
