@@ -1,37 +1,75 @@
-import { View, Text, StyleSheet } from "react-native";
+// Home.js - FIXED VERSION (No Stretch)
+import { StyleSheet, ScrollView, View } from "react-native";
 import React, { useEffect } from "react";
-import Layout from "../components/Layout/Layout";
 import Categories from "../components/category/Category";
 import Banner from "../components/Banner/Banner";
 import Products from "../components/Products/Products";
 import Header from "../components/Layout/Header";
-import { useSelector, useDispatch } from "react-redux";
+import Footer from "../components/Layout/Footer";
+import { useDispatch } from "react-redux";
 import { getUserData } from "../redux/features-auth/userActions";
+import { useNavigation } from "@react-navigation/native";
 
 const Home = () => {
-  const disptach = useDispatch();
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   useEffect(() => {
-    disptach(getUserData());
-  }, [disptach]);
+    dispatch(getUserData());
+  }, [dispatch]);
 
   return (
-    <Layout>
-      <Header />
-      <Categories />
-      <Banner />
-      <Products />
-    </Layout>
+    <View style={styles.container}>
+      {/* Main Content - Scrollable */}
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        bounces={false} // Disable bouncing to prevent stretch
+        overScrollMode="never" // Disable over-scroll
+      >
+        <Header />
+        <Categories />
+        <Banner />
+        <Products navigation={navigation} />
+      </ScrollView>
+
+      {/* Fixed Footer */}
+      <View style={styles.footer}>
+        <Footer />
+      </View>
+    </View>
   );
 };
-
-export default Home;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 80, // Space for footer
+  },
+  footer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 70,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderTopColor: "#e9ecef",
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 8,
   },
 });
+
+export default Home;
