@@ -30,14 +30,13 @@ const router = express.Router();
 router.post("/register", registerController);
 
 //login
-// router.post("/login", limiter, loginController);
 router.post("/login", loginController);
 
 //profile
 router.get("/profile", isAuth, getUserProfileController);
 
 //logout
-router.get("/logout", isAuth, logoutController);
+router.get("/logout", logoutController);
 
 // uopdate profile
 router.put("/profile-update", isAuth, updateProfileController);
