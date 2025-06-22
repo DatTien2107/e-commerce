@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { userReducer } from "./features-auth/userReducer";
 import { productReducer } from "./product/productReducer";
+import { categoryReducer } from "./category/categoryReducer";
 
 export default configureStore({
   reducer: {
     user: userReducer,
     product: productReducer,
+    category: categoryReducer,
   },
 });
 

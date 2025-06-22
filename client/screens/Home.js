@@ -3,12 +3,15 @@ import { StyleSheet, ScrollView, View } from "react-native";
 import React, { useEffect } from "react";
 import Categories from "../components/category/Category";
 import Banner from "../components/Banner/Banner";
-import Products from "../components/Products/Products";
+
 import Header from "../components/Layout/Header";
 import Footer from "../components/Layout/Footer";
 import { useDispatch } from "react-redux";
 import { getUserData } from "../redux/features-auth/userActions";
 import { useNavigation } from "@react-navigation/native";
+// import Products from "../components/Products/Products";
+
+import ProductsBySections from "../components/Products/ProductByCategory";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -31,7 +34,9 @@ const Home = () => {
         <Header />
         <Categories />
         <Banner />
-        <Products navigation={navigation} />
+        {/* <Products navigation={navigation} /> */}
+
+        <ProductsBySections navigation={navigation} />
       </ScrollView>
 
       {/* Fixed Footer */}

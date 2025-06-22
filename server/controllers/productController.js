@@ -7,15 +7,31 @@ import { getDataUri } from "./../utils/features.js";
 export const getAllProductsController = async (req, res) => {
   const { keyword, category } = req.query;
   try {
+    // Tạo filter object động
+    const filter = {};
+
+    // Thêm name filter nếu có keyword
+    if (keyword) {
+      filter.name = {
+        $regex: keyword,
+        $options: "i",
+      };
+    }
+
+    // CHỈ thêm category filter nếu category parameter được truyền vào
+    if (category) {
+      filter.category = category;
+    }
+    // KHÔNG thêm category filter nếu không có category parameter
+
+    console.log("🔍 MongoDB Filter:", filter);
+
     const products = await productModel
-      .find({
-        name: {
-          $regex: keyword ? keyword : "",
-          $options: "i",
-        },
-        // category: category ? category : null,
-      })
+      .find(filter) // Sử dụng filter động
       .populate("category");
+
+    console.log(`✅ Found ${products.length} products`);
+
     res.status(200).send({
       success: true,
       message: "all products fetched successfully",
@@ -23,7 +39,7 @@ export const getAllProductsController = async (req, res) => {
       products,
     });
   } catch (error) {
-    console.log(error);
+    console.log("❌ Error:", error);
     res.status(500).send({
       success: false,
       message: "Error In Get All Products API",

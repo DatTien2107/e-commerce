@@ -82,17 +82,17 @@ const Products = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>Featured Products</Text>
+          <Text style={styles.headerTitle}> Products</Text>
           <Text style={styles.headerSubtitle}>
             {totalProducts || products.length} items available
           </Text>
         </View>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.refreshButton}
           onPress={() => dispatch(getAllProducts())}
         >
           <Text style={styles.refreshText}>🔄</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       {/* Products List */}
