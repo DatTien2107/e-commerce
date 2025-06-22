@@ -33,7 +33,7 @@ const Home = () => {
       >
         <Header />
         <Categories />
-        <Banner />
+        <Banner navigation={navigation} />
         {/* <Products navigation={navigation} /> */}
 
         <ProductsBySections navigation={navigation} />

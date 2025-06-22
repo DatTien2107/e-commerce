@@ -10,6 +10,7 @@ import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
 
 import connectDB from "./config/db.js";
 import cookieParser from "cookie-parser";
@@ -50,6 +51,7 @@ app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/cat", categoryRoutes);
 app.use("/api/v1/order", orderRoutes);
+app.use("/api/v1/cart", cartRoutes);
 
 app.get("/", (req, res) => {
   return res.status(200).send("<h1> welcome node server<h1/>");

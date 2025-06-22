@@ -1,4 +1,4 @@
-// components/Products/ProductsBySections.js - BEAUTIFUL DESIGN
+// components/Products/ProductsBySections.js - CẬP NHẬT VỚI CART
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProducts } from "../../redux/product/productActions";
 import { getAllCategories } from "../../redux/category/categoryActions";
+import { addToCart, getCartCount } from "../../redux/cart/cartActions"; // Thêm import này
 
 const { width } = Dimensions.get("window");
 
@@ -23,11 +24,13 @@ const ProductsBySections = ({ navigation }) => {
   // Get data from Redux
   const { products, loading } = useSelector((state) => state.product);
   const { categories } = useSelector((state) => state.category);
+  const { cartCount } = useSelector((state) => state.cart); // Thêm cart state
 
   // Fetch data khi component mount
   useEffect(() => {
     dispatch(getAllProducts());
     dispatch(getAllCategories());
+    dispatch(getCartCount()); // Load cart count khi app mở
   }, [dispatch]);
 
   // Fetch products khi category thay đổi
@@ -49,13 +52,30 @@ const ProductsBySections = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header với gradient */}
+      {/* Header với Cart Badge */}
       <View style={styles.headerContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Products</Text>
-          <Text style={styles.subtitle}>
-            {products?.length || 0} amazing products
-          </Text>
+          <View style={styles.headerLeft}>
+            <Text style={styles.title}>Products</Text>
+            <Text style={styles.subtitle}>
+              {products?.length || 0} amazing products
+            </Text>
+          </View>
+
+          {/* Cart Icon với Badge */}
+          <TouchableOpacity
+            style={styles.cartIcon}
+            onPress={() => navigation?.navigate("cart")}
+          >
+            <Text style={styles.cartIconText}>🛒</Text>
+            {cartCount > 0 && (
+              <View style={styles.cartBadge}>
+                <Text style={styles.cartBadgeText}>
+                  {cartCount > 99 ? "99+" : cartCount}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -139,7 +159,7 @@ const ProductsBySections = ({ navigation }) => {
   );
 };
 
-// Helper function
+// Helper function (giữ nguyên)
 const getCategoryInfo = (categoryName) => {
   const categoryMap = {
     laptop: {
@@ -166,12 +186,6 @@ const getCategoryInfo = (categoryName) => {
       color: "#9B59B6",
       gradient: ["#9B59B6", "#BE90D4"],
     },
-    ipad: {
-      name: "iPad",
-      icon: "💻",
-      color: "#9B59B6",
-      gradient: ["#9B59B6", "#BE90D4"],
-    },
     headphone: {
       name: "headphone",
       icon: "🎧",
@@ -190,7 +204,7 @@ const getCategoryInfo = (categoryName) => {
   );
 };
 
-// Products Grid Component - 2 products per row
+// Products Grid Component (giữ nguyên)
 const ProductsGrid = ({ products, navigation }) => {
   if (!products || products.length === 0) {
     return (
@@ -218,27 +232,58 @@ const ProductsGrid = ({ products, navigation }) => {
   );
 };
 
-// Beautiful Product Card Component
+// CẬP NHẬT Product Card Component với Cart Integration
 const ProductCard = ({ product, navigation, index }) => {
+  const dispatch = useDispatch();
   const [imageError, setImageError] = useState(false);
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
+
+  // Get cart loading state từ Redux
+  const { addToCartLoading } = useSelector((state) => state.cart);
 
   const handlePress = () => {
     navigation?.navigate("productDetails", { productId: product._id });
   };
 
   const handleAddToCart = async () => {
-    if (product.stock === 0) return;
+    if (product.stock === 0) {
+      Alert.alert("Out of Stock", "This product is currently out of stock.");
+      return;
+    }
 
-    setIsAddingToCart(true);
-    setTimeout(() => {
-      setIsAddingToCart(false);
-      Alert.alert(
-        "Added to Cart! 🛒",
-        `${product.name} has been added to your cart.`,
-        [{ text: "Awesome!" }]
-      );
-    }, 800);
+    try {
+      // Dispatch action add to cart
+      const result = await dispatch(addToCart(product._id, 1));
+
+      if (result.success) {
+        // Show success alert
+        Alert.alert(
+          "Added to Cart! 🛒",
+          `${product.name} has been added to your cart.`,
+          [
+            {
+              text: "Continue Shopping",
+              style: "cancel",
+            },
+            {
+              text: "View Cart",
+              onPress: () => navigation?.navigate("cart"),
+            },
+          ]
+        );
+      } else {
+        // Show error alert
+        Alert.alert(
+          "Error",
+          result.message || "Failed to add product to cart",
+          [{ text: "OK" }]
+        );
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      Alert.alert("Error", "Something went wrong. Please try again.", [
+        { text: "OK" },
+      ]);
+    }
   };
 
   const imageUri = product.images?.[0]?.url;
@@ -341,14 +386,18 @@ const ProductCard = ({ product, navigation, index }) => {
               styles.cartButton,
               {
                 backgroundColor: categoryInfo.color,
-                opacity: product.stock === 0 || isAddingToCart ? 0.6 : 1,
+                opacity: product.stock === 0 || addToCartLoading ? 0.6 : 1,
               },
             ]}
             onPress={handleAddToCart}
-            disabled={product.stock === 0 || isAddingToCart}
+            disabled={product.stock === 0 || addToCartLoading}
           >
             <Text style={styles.cartButtonText}>
-              {isAddingToCart ? "⏳" : product.stock === 0 ? "❌" : "🛒 Add"}
+              {addToCartLoading
+                ? "⏳ Adding..."
+                : product.stock === 0
+                ? "❌ Out of Stock"
+                : "🛒 Add"}
             </Text>
           </TouchableOpacity>
         </View>
@@ -357,6 +406,7 @@ const ProductCard = ({ product, navigation, index }) => {
   );
 };
 
+// CẬP NHẬT STYLES - Thêm styles cho cart icon
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -374,7 +424,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
 
-  // Header Styles
+  // Header Styles - CẬP NHẬT
   headerContainer: {
     backgroundColor: "#FFFFFF",
     shadowColor: "#000",
@@ -384,8 +434,14 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 20,
     paddingTop: 30,
+  },
+  headerLeft: {
+    flex: 1,
   },
   title: {
     fontSize: 28,
@@ -399,7 +455,45 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
 
-  // Tabs Styles
+  // Cart Icon Styles - MỚI
+  cartIcon: {
+    position: "relative",
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#F8F9FA",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cartIconText: {
+    fontSize: 24,
+  },
+  cartBadge: {
+    position: "absolute",
+    top: -5,
+    right: -5,
+    backgroundColor: "#E74C3C",
+    borderRadius: 12,
+    minWidth: 24,
+    height: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
+  },
+  cartBadgeText: {
+    color: "#FFFFFF",
+    fontSize: 11,
+    fontWeight: "700",
+    paddingHorizontal: 4,
+  },
+
+  // Giữ nguyên tất cả styles khác...
   tabsContainer: {
     backgroundColor: "#FFFFFF",
     paddingVertical: 20,
@@ -449,8 +543,6 @@ const styles = StyleSheet.create({
     color: "#45B7D1",
     fontWeight: "700",
   },
-
-  // Grid Styles
   scrollContainer: {
     flex: 1,
   },
@@ -460,10 +552,8 @@ const styles = StyleSheet.create({
     padding: 15,
     justifyContent: "space-between",
   },
-
-  // Card Styles
   card: {
-    width: (width - 45) / 2, // 2 cards per row with margin
+    width: (width - 45) / 2,
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
     marginBottom: 20,
@@ -474,8 +564,6 @@ const styles = StyleSheet.create({
     elevation: 8,
     overflow: "hidden",
   },
-
-  // Image Styles
   imageContainer: {
     height: 180,
     backgroundColor: "#F8F9FA",
@@ -501,8 +589,6 @@ const styles = StyleSheet.create({
     color: "#95A5A6",
     fontWeight: "500",
   },
-
-  // Badge Styles
   stockBadge: {
     position: "absolute",
     top: 10,
@@ -536,22 +622,6 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 20,
   },
-  favoriteButton: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.9)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  favoriteIcon: {
-    fontSize: 18,
-  },
-
-  // Content Styles
   cardContent: {
     padding: 15,
   },
@@ -579,8 +649,6 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     marginBottom: 12,
   },
-
-  // Price Styles
   priceContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -603,8 +671,6 @@ const styles = StyleSheet.create({
     color: "#7F8C8D",
     marginLeft: 4,
   },
-
-  // Action Buttons
   actionContainer: {
     flexDirection: "row",
     gap: 8,
@@ -634,8 +700,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#FFFFFF",
   },
-
-  // Empty State
   emptyContainer: {
     flex: 1,
     justifyContent: "center",

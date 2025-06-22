@@ -1,30 +1,53 @@
+// data/BannerData.js
 export const BannerData = [
   {
-    _id: 1,
     coverImageUri:
-      "https://user-images.githubusercontent.com/6414178/73920321-2357b680-4900-11ea-89d5-2e8cbecec9f6.jpg",
-    cornerLabelColor: "#FFD300",
-    cornerLabelText: "GOTY",
-  },
-  {
-    _id: 2,
-    coverImageUri:
-      "https://user-images.githubusercontent.com/6414178/73920358-336f9600-4900-11ea-8eec-cc919b991e90.jpg",
-    cornerLabelColor: "#0080ff",
+      "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?ixlib=rb-4.0.3",
+    cornerLabelColor: "#FFB74D",
     cornerLabelText: "NEW",
+    title: "Latest Laptops",
+    subtitle: "Discover powerful laptops for work and gaming",
+    categoryId: "laptop", // Đây là category identifier, NOT screen name
+    categoryName: "Laptop",
   },
   {
-    _id: 3,
     coverImageUri:
-      "https://user-images.githubusercontent.com/6414178/73927874-25744200-490d-11ea-940f-db3e5dbd8b2b.jpg",
-    cornerLabelColor: "#2ECC40",
-    cornerLabelText: "-75%",
+      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?ixlib=rb-4.0.3",
+    cornerLabelColor: "#66BB6A",
+    cornerLabelText: "SALE",
+    title: "Smartphones",
+    subtitle: "Latest mobile phones with best prices",
+    categoryId: "phone", // Sửa từ "mobile" thành "phone"
+    categoryName: "Phone",
   },
   {
-    _id: 4,
     coverImageUri:
-      "https://user-images.githubusercontent.com/6414178/73920399-45e9cf80-4900-11ea-9d5b-743fe5e8b9a4.jpg",
-    cornerLabelColor: "#2ECC40",
-    cornerLabelText: "-20%",
+      "https://images.unsplash.com/photo-1583394838336-acd977736f90?ixlib=rb-4.0.3",
+    cornerLabelColor: "#EF5350",
+    cornerLabelText: "HOT",
+    title: "Gaming PCs",
+    subtitle: "High-performance computers for gaming",
+    categoryId: "pc",
+    categoryName: "PC",
+  },
+  {
+    coverImageUri:
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3",
+    cornerLabelColor: "#9C27B0",
+    cornerLabelText: "PREMIUM",
+    title: "Headphones",
+    subtitle: "Premium audio experience",
+    categoryId: "headphone",
+    categoryName: "Headphone",
+  },
+  {
+    coverImageUri:
+      "https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0.3",
+    cornerLabelColor: "#FF7043",
+    cornerLabelText: "TRENDING",
+    title: "All Products",
+    subtitle: "Browse our complete collection",
+    categoryId: "all", // Special case for all products
+    categoryName: "All Products",
   },
 ];
