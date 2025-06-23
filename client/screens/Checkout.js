@@ -51,7 +51,7 @@ const Checkout = ({ navigation }) => {
   const calculatePricing = () => {
     const itemPrice = cart.totalAmount || 0;
     const tax = Math.round(itemPrice * 0.1); // 10% tax
-    const shippingCharges = itemPrice > 500000 ? 0 : 30000; // Free shipping over 500k VND
+    const shippingCharges = itemPrice > 500000 ? 0 : 300; // Free shipping over 500k VND
     const totalAmount = itemPrice + tax + shippingCharges;
 
     return {
@@ -145,11 +145,11 @@ const Checkout = ({ navigation }) => {
           [
             {
               text: "View Orders",
-              onPress: () => navigation.navigate("MyOrders"),
+              onPress: () => navigation.navigate("myorders"),
             },
             {
               text: "Continue Shopping",
-              onPress: () => navigation.navigate("Home"),
+              onPress: () => navigation.navigate("home"),
             },
           ]
         );

@@ -262,7 +262,7 @@ const OrderCard = ({
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Total:</Text>
             <Text style={styles.summaryValue}>
-              {order.totalAmount?.toLocaleString("vi-VN")} VNĐ
+              {order.totalAmount?.toLocaleString("vi-USA")} $
             </Text>
           </View>
 

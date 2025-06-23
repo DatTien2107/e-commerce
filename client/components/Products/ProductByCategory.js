@@ -555,6 +555,7 @@ const styles = StyleSheet.create({
   card: {
     width: (width - 45) / 2,
     backgroundColor: "#FFFFFF",
+    height: 400,
     borderRadius: 16,
     marginBottom: 20,
     shadowColor: "#000",
@@ -624,6 +625,8 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     padding: 15,
+    flex: 1,
+    justifyContent: "space-between",
   },
   categoryBadge: {
     alignSelf: "flex-start",
@@ -653,7 +656,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 12,
+    height: 24,
   },
   price: {
     fontSize: 18,
@@ -673,16 +677,23 @@ const styles = StyleSheet.create({
   },
   actionContainer: {
     flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 8,
     gap: 8,
   },
   detailsButton: {
     flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "#F8F9FA",
     paddingVertical: 10,
+    paddingHorizontal: 8,
     borderRadius: 8,
-    alignItems: "center",
     borderWidth: 1,
     borderColor: "#E9ECEF",
+    minHeight: 40,
+    gap: 4,
   },
   detailsButtonText: {
     fontSize: 12,

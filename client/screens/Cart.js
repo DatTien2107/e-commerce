@@ -1,4 +1,4 @@
-// screens/Cart/Cart.js
+// screens/Cart/Cart.js - OPTIMIZED VERSION
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   RefreshControl,
   Alert,
 } from "react-native";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getCart,
@@ -23,6 +23,8 @@ import CartItem from "../components/cart/CartItem";
 const Cart = ({ navigation }) => {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
+  const isMounted = useRef(true);
+  const hasInitialLoad = useRef(false);
 
   // Get cart data from Redux
   const {
@@ -42,15 +44,29 @@ const Cart = ({ navigation }) => {
   const totalItems = cart?.totalItems || 0;
   const totalAmount = cart?.totalAmount || 0;
 
-  // Load cart khi component mount
+  // ✅ FIX: Chỉ load cart lần đầu tiên, không load lại khi có update
   useEffect(() => {
-    dispatch(getCart());
-  }, [dispatch]);
+    isMounted.current = true;
 
-  // Refresh handler
+    // Chỉ fetch nếu chưa có data và chưa loading
+    if (!hasInitialLoad.current && cartItems.length === 0 && !getCartLoading) {
+      console.log("🔄 Initial cart load...");
+      dispatch(getCart());
+      hasInitialLoad.current = true;
+    }
+
+    return () => {
+      isMounted.current = false;
+    };
+  }, []); // ✅ Empty dependency array - chỉ chạy lần đầu
+
+  // ✅ FIX: Manual refresh handler - chỉ khi user kéo xuống
   const onRefresh = useCallback(async () => {
+    if (!isMounted.current) return;
+
     setRefreshing(true);
-    await dispatch(getCart());
+    console.log("🔄 Manual refresh triggered");
+    await dispatch(getCart(true)); // force refresh
     setRefreshing(false);
   }, [dispatch]);
 
@@ -58,7 +74,7 @@ const Cart = ({ navigation }) => {
   const calculatePricing = () => {
     const subtotal = totalAmount;
     const tax = Math.round(subtotal * 0.1); // 10% tax
-    const shipping = subtotal > 500000 ? 0 : 30000; // Free shipping over 500k VND, otherwise 30k VND
+    const shipping = subtotal > 500000 ? 0 : 300; // Free shipping over 500k VND, otherwise 300 $
     const grandTotal = subtotal + tax + shipping;
 
     return {
@@ -132,20 +148,23 @@ const Cart = ({ navigation }) => {
         )}
       </View>
 
-      {/* Loading state */}
-      {getCartLoading && !refreshing && (
+      {/* ✅ FIX: Chỉ hiện loading khi thực sự đang fetch lần đầu */}
+      {getCartLoading && !refreshing && !hasInitialLoad.current && (
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Loading your cart...</Text>
         </View>
       )}
 
       {/* Error state */}
-      {error && cartItems.length === 0 && (
+      {error && cartItems.length === 0 && !getCartLoading && (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>Error: {error}</Text>
           <TouchableOpacity
             style={styles.retryButton}
-            onPress={() => dispatch(getCart())}
+            onPress={() => {
+              console.log("🔄 Retry button pressed");
+              dispatch(getCart(true));
+            }}
           >
             <Text style={styles.retryButtonText}>Try Again</Text>
           </TouchableOpacity>
@@ -153,18 +172,21 @@ const Cart = ({ navigation }) => {
       )}
 
       {/* Empty cart */}
-      {cartItems.length === 0 && !getCartLoading && !error && (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyIcon}>🛒</Text>
-          <Text style={styles.emptyText}>Your cart is empty</Text>
-          <TouchableOpacity
-            style={styles.shopButton}
-            onPress={() => navigation.navigate("home")}
-          >
-            <Text style={styles.shopButtonText}>Start Shopping</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      {cartItems.length === 0 &&
+        !getCartLoading &&
+        !error &&
+        hasInitialLoad.current && (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyIcon}>🛒</Text>
+            <Text style={styles.emptyText}>Your cart is empty</Text>
+            <TouchableOpacity
+              style={styles.shopButton}
+              onPress={() => navigation.navigate("home")}
+            >
+              <Text style={styles.shopButtonText}>Start Shopping</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
       {/* Cart items */}
       {cartItems.length > 0 && (
@@ -326,9 +348,7 @@ const styles = StyleSheet.create({
     paddingTop: 15,
   },
   grandTotal: {
-    borderWidth: 1,
-    borderColor: "lightgray",
-    backgroundColor: "#ffffff",
+    backgroundColor: "#F7E7CE",
     padding: 5,
     margin: 5,
   },
