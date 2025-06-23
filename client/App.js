@@ -18,6 +18,7 @@ import Dashboard from "./screens/Admin/Dashboard";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import OrderDetails from "./screens/Orders/OrderDetails";
+import ManageOrders from "./screens/Admin/ManageOrders";
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -43,6 +44,7 @@ export default function App() {
           <Stack.Screen name="myorders" component={MyOrder} />
           <Stack.Screen name="adminPanel" component={Dashboard} />
           <Stack.Screen name="OrderDetails" component={OrderDetails} />
+          <Stack.Screen name="ManageOrders" component={ManageOrders} />
 
           <Stack.Screen
             name="login"

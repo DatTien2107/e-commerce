@@ -25,6 +25,8 @@ const getAuthConfig = async () => {
   }
 };
 
+// ========== USER ORDER ACTIONS (Existing) ==========
+
 // CREATE ORDER
 export const createOrder = (orderData) => async (dispatch) => {
   try {
@@ -161,6 +163,108 @@ export const processPayment = (totalAmount) => async (dispatch) => {
     return { success: false, message: errorMessage };
   }
 };
+
+// ========== ADMIN ORDER ACTIONS ==========
+
+// GET ALL ORDERS (ADMIN)
+export const getAllOrders = () => async (dispatch) => {
+  try {
+    dispatch({ type: "getAllOrdersRequest" });
+
+    console.log("📋 Admin: Fetching all orders...");
+
+    const config = await getAuthConfig();
+    const { data } = await axios.get(
+      `${server}/order/admin/get-all-orders`,
+      config
+    );
+
+    console.log("✅ All orders fetched:", data);
+
+    dispatch({
+      type: "getAllOrdersSuccess",
+      payload: data,
+    });
+
+    return { success: true, orders: data.orders };
+  } catch (error) {
+    console.log("❌ Get all orders error:", error.response?.data);
+
+    const errorMessage =
+      error.response?.data?.message || "Failed to fetch orders";
+
+    dispatch({
+      type: "getAllOrdersFail",
+      payload: errorMessage,
+    });
+
+    return { success: false, message: errorMessage };
+  }
+};
+
+// ========== CHANGE ORDER STATUS - IMPROVED ==========
+
+// CHANGE ORDER STATUS (ADMIN) - Version cải thiện với tham số status
+export const changeOrderStatus =
+  (orderId, newStatus = null) =>
+  async (dispatch) => {
+    try {
+      dispatch({ type: "changeOrderStatusRequest" });
+
+      console.log(
+        "🔄 Admin: Changing order status for:",
+        orderId,
+        "to:",
+        newStatus
+      );
+
+      const config = await getAuthConfig();
+
+      // Nếu có newStatus thì gửi trong body, không thì để empty để auto-advance
+      const requestBody = newStatus ? { orderStatus: newStatus } : {};
+
+      const { data } = await axios.put(
+        `${server}/order/admin/order/${orderId}`,
+        requestBody,
+        config
+      );
+
+      console.log("✅ Order status changed:", data);
+
+      dispatch({
+        type: "changeOrderStatusSuccess",
+        payload: data,
+      });
+
+      // Refresh all orders to get updated data
+      dispatch(getAllOrders());
+
+      return {
+        success: true,
+        message: data.message,
+        data: data.data || null,
+      };
+    } catch (error) {
+      console.log("❌ Change order status error:", error.response?.data);
+
+      const errorMessage =
+        error.response?.data?.message || "Failed to change order status";
+
+      dispatch({
+        type: "changeOrderStatusFail",
+        payload: errorMessage,
+      });
+
+      return { success: false, message: errorMessage };
+    }
+  };
+
+// Giữ lại function cũ để backward compatibility (tự động advance)
+export const autoAdvanceOrderStatus = (orderId) => async (dispatch) => {
+  return dispatch(changeOrderStatus(orderId)); // Gọi không có newStatus
+};
+
+// ========== UTILITY ACTIONS ==========
 
 // CLEAR ORDER ERRORS
 export const clearOrderErrors = () => (dispatch) => {
