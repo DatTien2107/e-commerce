@@ -13,18 +13,24 @@ const Account = ({ navigation }) => {
   // Get user data from Redux store
   const { user, loading, error } = useSelector((state) => state.user);
 
-  // Fetch user data when component mounts
+  // ✅ FIX: Only fetch user data if we don't have it
   useEffect(() => {
-    console.log("Account component mounted, fetching user data...");
-    dispatch(getUserData());
-  }, [dispatch]);
+    if (!user && !loading) {
+      console.log("Account component: No user data, fetching...");
+      dispatch(getUserData());
+    } else {
+      console.log(
+        "Account component: User data already exists, skipping fetch"
+      );
+      console.log("Existing user:", user?.name);
+    }
+  }, [dispatch, user, loading]);
 
-  // Handle error
+  // ✅ FIX: Better error handling - don't interfere with other components
   useEffect(() => {
     if (error) {
       console.log("Account error:", error);
-      // Optionally show alert or handle error
-      // alert(error);
+      // Don't auto-clear error - let other components handle their own errors
     }
   }, [error]);
 
@@ -140,7 +146,7 @@ const Account = ({ navigation }) => {
             </TouchableOpacity>
           )}
 
-          {/* Refresh button */}
+          {/* ✅ FIX: Safe refresh button with better error handling */}
           <TouchableOpacity
             style={[
               styles.btn,
@@ -151,7 +157,10 @@ const Account = ({ navigation }) => {
                 paddingTop: 15,
               },
             ]}
-            onPress={() => dispatch(getUserData())}
+            onPress={() => {
+              console.log("Manual refresh triggered by user");
+              dispatch(getUserData());
+            }}
           >
             <AntDesign style={styles.btnText} name="reload1" />
             <Text style={styles.btnText}>Refresh Profile</Text>

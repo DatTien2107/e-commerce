@@ -12,16 +12,39 @@ import InputBox from "../../components/Form/inputBox";
 //redux hooks
 import { login } from "../../redux/features-auth/userActions";
 import { useDispatch, useSelector } from "react-redux";
-import { useReduxStateHook } from "../../hooks/customeHook";
+
 const Login = ({ navigation }) => {
   const loginImage = "https://fishcopfed.coop/images/login.png";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   // hooks
   const dispatch = useDispatch();
-  // global state
 
-  const loading = useReduxStateHook(navigation, "home");
+  // ✅ FIX: Use useSelector directly instead of customeHook
+  const { loading, error, message } = useSelector((state) => state.user);
+
+  // ✅ FIX: Handle login-specific messages only
+  useEffect(() => {
+    if (error) {
+      alert(error);
+      dispatch({ type: "clearError" });
+    }
+
+    if (message) {
+      alert(message);
+      dispatch({ type: "clearMessage" });
+
+      // ✅ CRITICAL FIX: Only navigate on successful login
+      if (message.includes("Login Successfully")) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "home" }],
+        });
+      }
+      // For other messages (like profile updates), just show alert but don't navigate
+    }
+  }, [error, message, dispatch, navigation]);
 
   // login function
   const handleLogin = () => {
@@ -64,6 +87,7 @@ const Login = ({ navigation }) => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     // alignItems: "center",
@@ -98,4 +122,5 @@ const styles = StyleSheet.create({
     color: "red",
   },
 });
+
 export default Login;

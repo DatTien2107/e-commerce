@@ -237,33 +237,57 @@ export const udpatePasswordController = async (req, res) => {
   }
 };
 
-/// Update user profile photo
+/// Fixed Update user profile photo
 export const updateProfilePicController = async (req, res) => {
   try {
     const user = await userModel.findById(req.user._id);
+
     // file get from client photo
     const file = getDataUri(req.file);
-    // delete prev image
-    await cloudinary.v2.uploader.destroy(user.profilePic.public_id);
-    // update
+
+    // ✅ FIX 1: Safely delete prev image only if exists
+    if (user.profilePic && user.profilePic.public_id) {
+      try {
+        await cloudinary.v2.uploader.destroy(user.profilePic.public_id);
+        console.log("✅ Previous image deleted:", user.profilePic.public_id);
+      } catch (deleteError) {
+        console.log("⚠️ Failed to delete previous image:", deleteError);
+        // Don't fail entire upload if delete fails
+      }
+    } else {
+      console.log("ℹ️ No previous image to delete");
+    }
+
+    // Upload new image
     const cdb = await cloudinary.v2.uploader.upload(file.content);
+    console.log("✅ New image uploaded:", cdb.public_id);
+
+    // Update user profile
     user.profilePic = {
       public_id: cdb.public_id,
       url: cdb.secure_url,
     };
-    // save func
+
+    // Save user
     await user.save();
+    console.log("✅ User profile updated");
+
+    // ✅ FIX 2: Return updated user data
+    // Remove password before sending
+    const updatedUser = { ...user.toObject() };
+    delete updatedUser.password;
 
     res.status(200).send({
       success: true,
-      message: "profile picture updated",
+      message: "Profile picture updated successfully",
+      user: updatedUser, // ✅ Include updated user data
     });
   } catch (error) {
-    console.log(error);
+    console.log("❌ Update profile pic error:", error);
     res.status(500).send({
       success: false,
       message: "Error In update profile pic API",
-      error,
+      error: error.message,
     });
   }
 };
