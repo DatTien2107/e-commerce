@@ -7,7 +7,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 const Dashboard = ({ navigation }) => {
   // Navigation handlers
   const handleManageProducts = () => {
-    // navigation.navigate("ManageProducts");
+    navigation.navigate("ManageProducts");
     console.log("Navigate to Manage Products");
   };
 
@@ -126,21 +126,21 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   // Special styling for Manage Orders button
-  ordersBtn: {
-    backgroundColor: "#e3f2fd",
-    borderLeftWidth: 4,
-    borderLeftColor: "#2196f3",
-  },
-  ordersIcon: {
-    color: "#2196f3",
-  },
-  ordersBtnText: {
-    color: "#2196f3",
-    fontWeight: "bold",
-  },
-  ordersArrow: {
-    color: "#2196f3",
-  },
+  // ordersBtn: {
+  //   backgroundColor: "#e3f2fd",
+  //   borderLeftWidth: 4,
+  //   borderLeftColor: "#2196f3",
+  // },
+  // ordersIcon: {
+  //   color: "#2196f3",
+  // },
+  // ordersBtnText: {
+  //   color: "#2196f3",
+  //   fontWeight: "bold",
+  // },
+  // ordersArrow: {
+  //   color: "#2196f3",
+  // },
 });
 
 export default Dashboard;
