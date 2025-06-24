@@ -28,6 +28,7 @@ import {
   clearAdminProductErrors,
   clearAdminProductMessages,
   resetAdminProductState,
+  getAllProductsAdmin,
 } from "../../redux/admin/adminProductActions";
 import { getAllCategories } from "../../redux/category/categoryActions";
 import { getSingleProduct } from "../../redux/product/productActions";
@@ -114,6 +115,7 @@ const EditProduct = () => {
           text: "OK",
           onPress: () => {
             dispatch(resetAdminProductState());
+            dispatch(getAllProductsAdmin());
             navigation.goBack();
           },
         },
@@ -282,13 +284,13 @@ const EditProduct = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         {/* Header */}
-        <View style={styles.header}>
+        {/* <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <AntDesign name="arrowleft" size={24} color="#fff" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Edit Product</Text>
           <View style={{ width: 24 }} />
-        </View>
+        </View> */}
 
         <ScrollView
           style={styles.scrollView}

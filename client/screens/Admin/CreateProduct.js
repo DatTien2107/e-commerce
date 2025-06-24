@@ -27,6 +27,7 @@ import {
   clearAdminProductErrors,
   clearAdminProductMessages,
   resetAdminProductState,
+  getAllProductsAdmin,
 } from "../../redux/admin/adminProductActions";
 import { getAllCategories } from "../../redux/category/categoryActions";
 
@@ -77,6 +78,7 @@ const CreateProduct = () => {
           onPress: () => {
             dispatch(clearAdminProductMessages());
             dispatch(resetAdminProductState());
+            dispatch(getAllProductsAdmin());
             navigation.goBack(); // Return to ManageProducts
           },
         },

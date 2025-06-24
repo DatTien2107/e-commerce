@@ -35,7 +35,7 @@ export const adminProductReducer = createReducer(initialState, (builder) => {
     state.loading = false;
     state.adminProducts = action.payload.products;
     state.totalAdminProducts = action.payload.totalProducts;
-    state.message = action.payload.message;
+    // state.message = action.payload.message;
   });
   builder.addCase("getAllProductsAdminFail", (state, action) => {
     state.loading = false;
