@@ -22,6 +22,7 @@ import {
   deleteProduct,
   clearAdminProductErrors,
   clearAdminProductMessages,
+  resetAdminProductState,
 } from "../../redux/admin/adminProductActions";
 
 const ManageProducts = () => {
@@ -49,24 +50,31 @@ const ManageProducts = () => {
     dispatch(getAllProductsAdmin());
   }, [dispatch]);
 
-  // Handle success/error messages
+  // ✅ FIXED: Separate useEffect for error handling
   useEffect(() => {
     if (error) {
       Alert.alert("Error", error);
       dispatch(clearAdminProductErrors());
     }
+  }, [error, dispatch]);
 
+  // ✅ FIXED: Separate useEffect for success message
+  useEffect(() => {
     if (message) {
       Alert.alert("Success", message);
       dispatch(clearAdminProductMessages());
     }
+  }, [message, dispatch]);
 
-    // Reload products after successful delete
+  // ✅ FIXED: Separate useEffect for delete success
+  useEffect(() => {
     if (isDeleted) {
       console.log("✅ Product deleted, reloading list...");
       dispatch(getAllProductsAdmin(searchKeyword));
+      // Reset isDeleted flag để tránh reload liên tục
+      dispatch(resetAdminProductState());
     }
-  }, [error, message, isDeleted, dispatch, searchKeyword]);
+  }, [isDeleted, dispatch]); // Bỏ searchKeyword dependency
 
   // Handle search
   const handleSearch = () => {
@@ -137,7 +145,7 @@ const ManageProducts = () => {
           </Text>
 
           <Text style={styles.productCategory} numberOfLines={1}>
-            {item.category?.name || "No Category"}
+            {item.category?.category || "No Category"}
           </Text>
         </View>
 
@@ -207,7 +215,7 @@ const ManageProducts = () => {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.headerTitle}>Total product </Text>
+            <Text style={styles.headerTitle}>Manage Products</Text>
             <Text style={styles.headerSubtitle}>
               {totalAdminProducts || adminProducts.length} products
             </Text>
