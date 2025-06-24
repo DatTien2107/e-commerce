@@ -28,6 +28,7 @@ import ManageOrders from "./screens/Admin/ManageOrders";
 import { getUserData, clearAuthState } from "./redux/features-auth/userActions";
 import ManageProducts from "./screens/Admin/ManageProducts";
 import CreateProduct from "./screens/Admin/CreateProduct";
+import EditProduct from "./screens/Admin/EditProduct";
 
 const Stack = createNativeStackNavigator();
 
@@ -109,6 +110,7 @@ function AppContent() {
         <Stack.Screen name="ManageOrders" component={ManageOrders} />
         <Stack.Screen name="ManageProducts" component={ManageProducts} />
         <Stack.Screen name="createProduct" component={CreateProduct} />
+        <Stack.Screen name="editProduct" component={EditProduct} />
 
         <Stack.Screen
           name="login"

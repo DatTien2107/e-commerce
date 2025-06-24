@@ -146,6 +146,7 @@ export const deleteProduct = (productId) => async (dispatch) => {
 };
 
 // UPDATE PRODUCT IMAGE
+// UPDATE PRODUCT IMAGE - SỬA LẠI
 export const updateProductImage =
   (productId, imageData) => async (dispatch) => {
     try {
@@ -153,14 +154,30 @@ export const updateProductImage =
 
       console.log("🖼️ Updating product image:", productId);
 
-      const config = await getMultipartAuthConfig();
+      const token = await AsyncStorage.getItem("@auth");
 
-      const { data } = await axios.put(
-        `${server}/product/image/${productId}`,
-        imageData,
-        config
-      );
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
 
+      // Dùng fetch cho image upload như createProduct
+      const response = await fetch(`${server}/product/image/${productId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          // Không set Content-Type cho FormData
+        },
+        body: imageData,
+      });
+
+      console.log("📦 Image upload response status:", response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
       console.log("✅ Product image updated successfully:", data);
 
       dispatch({
@@ -168,12 +185,11 @@ export const updateProductImage =
         payload: data,
       });
     } catch (error) {
-      console.log("❌ Update product image error:", error.response?.data);
+      console.log("❌ Update product image error:", error.message);
 
       dispatch({
         type: "updateProductImageFail",
-        payload:
-          error.response?.data?.message || "Failed to update product image",
+        payload: error.message || "Failed to update product image",
       });
     }
   };
